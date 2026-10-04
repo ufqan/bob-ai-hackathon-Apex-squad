@@ -1,69 +1,67 @@
 # =============================================================================
 # HACKATHON SUBMISSION METADATA
 # =============================================================================
-# Instructions:
-#   - Fill in ALL required fields (marked with # REQUIRED)
-#   - Optional fields can be left as empty strings ""
-#   - Do NOT rename this file — the evaluation pipeline reads it by name
-#   - Use double quotes around all string values
-# =============================================================================
 
 team:
-  name: ""                             # REQUIRED — e.g., "Orion Squad"
-  track: ""                            # REQUIRED — one of: AI | DevOps | Sustainability | Open
+  name: "Apex Squad"
+  track: "AI"
   lead:
-    name: ""                           # REQUIRED — e.g., "Alice Chen"
-    email: ""                          # REQUIRED — e.g., "alice.chen@ibm.com"
+    name: "[Team Lead Name]"
+    email: "[lead@ibm.com]"
   members:
-    - name: ""                         # REQUIRED — Team member 1
+    - name: "[Member 1]"
       email: ""
-    - name: ""                         # Add more members by copying the two lines above
+    - name: "[Member 2]"
       email: ""
-    - name: ""
+    - name: "[Member 3]"
       email: ""
 
 submission:
-  title: ""                            # REQUIRED — Project display name, e.g., "SmartOps Dashboard"
+  title: "D3 Autonomous Disaster Response Planner"
 
-  problem_statement: >                 # REQUIRED — 1-3 sentences. What problem? Who has it?
-    Replace this text with a concise description of the real-world problem
-    your project addresses and who experiences it.
+  problem_statement: >
+    During large-scale disasters, emergency coordinators must rapidly allocate
+    limited medical teams and rescue units across multiple affected zones with
+    no objective scoring tool. Poor prioritisation delays life-saving response.
 
-  solution_summary: >                  # REQUIRED — 1-3 sentences. What did you build?
-    Replace this text with a clear description of your solution
-    and how it addresses the problem above.
+  solution_summary: >
+    A Python backend (Flask + CLI) that scores disaster zones by urgency using
+    severity, population, zone type, and road accessibility, then allocates a
+    fixed pool of medical teams and rescue units proportionally across zones.
 
-  key_features:                        # REQUIRED — List 3 to 5 specific features you implemented
-    - ""                               # e.g., "Real-time pipeline anomaly detection using watsonx.ai"
-    - ""
-    - ""
-    - ""                               # optional 4th
-    - ""                               # optional 5th
+  key_features:
+    - "Priority scoring engine: severity × population × type multiplier × accessibility factor"
+    - "Proportional floor allocation with remainder top-up guaranteeing exact resource totals"
+    - "Flask REST API — GET /api/allocate returns scored and allocated zones as JSON"
+    - "CLI entry point — python cli.py prints a formatted allocation table instantly"
+    - "Environment-variable-driven configuration for resource pool sizes"
 
   tech_stack:
-    languages: []                      # REQUIRED — e.g., ["Python", "TypeScript"]
-    frameworks: []                     # e.g., ["FastAPI", "React"]
-    ibm_technologies: []               # e.g., ["watsonx.ai", "IBM Bob", "IBM Cloud Functions"]
-    databases: []                      # e.g., ["PostgreSQL", "Redis"]
-    other: []                          # e.g., ["Docker", "GitHub Actions", "Slack API"]
+    languages: ["Python 3.9+"]
+    frameworks: ["Flask"]
+    ibm_technologies: ["IBM Bob"]
+    databases: []
+    other: ["GitHub Actions"]
 
-  what_we_are_most_proud_of: >         # Optional but recommended — guides judges to your best work
-    Replace with what aspect of the submission you consider strongest
-    and want judges to pay special attention to.
+  what_we_are_most_proud_of: >
+    The allocation algorithm guarantees the sum of allocated units always equals
+    the available pool exactly (floor allocation + remainder top-up), and the
+    clean separation of zones.py / scorer.py / allocator.py makes every layer
+    independently testable and replaceable without touching the others.
 
-  known_limitations: >                 # Optional but recommended — be honest about gaps
-    Replace with any known limitations, incomplete features,
-    or shortcuts taken due to time constraints.
+  known_limitations: >
+    Zone data is hardcoded — no live data feed or database integration.
+    Scoring multipliers are fixed constants, not user-configurable.
+    Flask routes have no authentication (not production-ready).
 
 # =============================================================================
 # ARTIFACT LOCATIONS
-# These paths are relative to the repo root. Only change if you moved files.
 # =============================================================================
 artifacts:
   source_code: "src/"
   setup_guide: "docs/setup-guide.md"
   architecture_doc: "docs/architecture.md"
-  demo_video: "demo/demo-video-link.txt"   # URL to hosted video (YouTube, Loom, Box)
-  live_demo: "demo/live-demo-url.txt"      # URL to deployed demo (optional)
+  demo_video: "demo/demo-video-link.txt"
+  live_demo: "demo/live-demo-url.txt"
   screenshots: "demo/screenshots/"
   presentation: "presentation/"

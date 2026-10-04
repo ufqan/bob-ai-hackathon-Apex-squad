@@ -6,74 +6,97 @@
 
 Before you begin, ensure you have the following installed:
 
-- [ ] [e.g., Python 3.11+]
-- [ ] [e.g., Node.js 18+]
-- [ ] [e.g., Docker Desktop]
-- [ ] [e.g., An IBM Cloud account with watsonx.ai access]
+- [x] Python 3.9 or higher (`python --version`)
+- [x] pip (`pip --version`)
+
+No database, no Docker, no cloud account required.
 
 ## Environment Variables
 
-Copy `.env.example` to `.env` and fill in the values:
+All environment variables have safe defaults and the application works out of the box without a `.env` file. To customise:
 
 ```bash
+cd src/backend
 cp .env.example .env
+# Edit .env as needed
 ```
 
-| Variable | Description | Required |
+| Variable | Description | Default |
 |---|---|---|
-| `WATSONX_API_KEY` | Your IBM watsonx.ai API key | Yes |
-| `WATSONX_PROJECT_ID` | Your watsonx.ai project ID | Yes |
-| `DATABASE_URL` | PostgreSQL connection string | Yes |
-| `SLACK_WEBHOOK_URL` | Slack webhook for alerts | No |
+| `TOTAL_MEDICAL_TEAMS` | Total medical teams available for allocation | `10` |
+| `TOTAL_RESCUE_UNITS` | Total rescue units available for allocation | `8` |
+| `APP_PORT` | Port the Flask server binds to | `5000` |
+| `APP_ENV` | `development` or `production` | `development` |
 
 ## Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/[your-org]/[your-repo].git
-cd [your-repo]
+git clone https://github.com/[your-org]/bob-ai-hackathon-Apex-squad.git
 
-# 2. Install backend dependencies
-[your command — e.g.: pip install -r requirements.txt]
+# 2. Navigate to the backend source directory
+cd bob-ai-hackathon-Apex-squad/src/backend
 
-# 3. Install frontend dependencies (if applicable)
-[your command — e.g.: cd frontend && npm install]
-
-# 4. Set up the database (if applicable)
-[your command — e.g.: python manage.py migrate]
+# 3. Install Python dependencies
+pip install -r requirements.txt
 ```
 
 ## Running the Application
 
-```bash
-# Start the backend
-[your command — e.g.: uvicorn app.main:app --reload]
+### Option A — CLI (no server, instant output)
 
-# Start the frontend (in a separate terminal, if applicable)
-[your command — e.g.: cd frontend && npm run dev]
+```bash
+cd src/backend
+python cli.py
 ```
 
-The application will be available at: `http://localhost:[PORT]`
+Expected output: a formatted table showing each disaster zone, its priority score, and the number of medical teams and rescue units allocated.
+
+### Option B — Flask REST API
+
+```bash
+cd src/backend
+python app.py
+```
+
+The server starts on `http://127.0.0.1:5000`.
+
+Available endpoints:
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/allocate` | GET | Returns scored zones and resource allocations as JSON |
+| `/health` | GET | Liveness check — returns `{"status": "ok"}` |
+
+Example request:
+```bash
+curl http://127.0.0.1:5000/api/allocate
+```
+
+### Overriding resource totals at runtime
+
+```bash
+# Linux / macOS
+TOTAL_MEDICAL_TEAMS=20 TOTAL_RESCUE_UNITS=15 python cli.py
+
+# Windows PowerShell
+$env:TOTAL_MEDICAL_TEAMS=20; $env:TOTAL_RESCUE_UNITS=15; python cli.py
+```
 
 ## Running Tests
 
-```bash
-[your test command — e.g.: pytest tests/ -v]
-```
-
-## Quick Demo (Optional)
-
-If you have a demo script or sample data to showcase the project quickly:
+No automated test suite is included in this prototype. To manually verify correctness, run:
 
 ```bash
-[e.g.: python demo/seed_demo_data.py]
-[e.g.: open http://localhost:8000/demo]
+python cli.py
 ```
+
+The output totals row must show `TOTALS` summing to exactly `TOTAL_MEDICAL_TEAMS` and `TOTAL_RESCUE_UNITS`.
 
 ## Troubleshooting
 
 | Issue | Solution |
 |---|---|
-| [e.g., `ModuleNotFoundError`] | [e.g., Run `pip install -r requirements.txt` again] |
-| [e.g., Database connection refused] | [e.g., Ensure PostgreSQL is running: `docker compose up db`] |
-| [e.g., watsonx.ai 401 error] | [e.g., Check `WATSONX_API_KEY` in your `.env` file] |
+| `ModuleNotFoundError: No module named 'flask'` | Run `pip install -r requirements.txt` from `src/backend/` |
+| `Address already in use` on port 5000 | Set `APP_PORT=5001` in `.env` or run `python app.py` after killing the existing process |
+| `python` not found | Ensure Python 3.9+ is on your `PATH`; try `python3 cli.py` on Linux/macOS |

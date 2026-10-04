@@ -2,40 +2,36 @@
 
 ## What We Built
 
-[Describe your solution in plain language. Avoid jargon — write as if explaining to a smart colleague unfamiliar with your tech stack.]
+The **D3 Autonomous Disaster Response Planner** is a Python backend that takes a set of disaster zones, scores each one by urgency, and allocates a fixed pool of medical teams and rescue units proportionally. It runs as a Flask REST API or as a standalone CLI tool.
 
 ## How It Works
 
-[Explain the core mechanism step by step. A numbered list or simple flow works well here.]
-
-1. [Step 1: e.g., "User connects their GitHub repository via OAuth"]
-2. [Step 2: e.g., "The system ingests pipeline logs and feeds them to watsonx.ai"]
-3. [Step 3: e.g., "An anomaly score is computed and displayed on the dashboard"]
-4. [Step 4: e.g., "Alerts are sent to Slack when the score exceeds a threshold"]
+1. **Zone data is loaded** from `zones.py` — each zone carries a severity rating (1–10), affected population, zone type (flood / earthquake / fire / other), and road accessibility.
+2. **Priority scores are calculated** in `scorer.py` using the formula: `severity × population × type_multiplier × accessibility_factor`. Earthquakes receive the highest multiplier (1.5×); inaccessible roads reduce the score by 20%.
+3. **Resources are allocated** in `allocator.py` — each zone receives a share of medical teams and rescue units proportional to its priority score. Floor division is used and any rounding remainder is awarded to the top-scoring zones so totals always add up exactly.
+4. **Results are served** via `app.py` (Flask `GET /api/allocate` → JSON) or printed to the console via `cli.py`.
 
 ## Architecture Diagram
 
-> See [`architecture.md`](architecture.md) for the detailed diagram.
-
-[Optionally include a simple ASCII or Mermaid diagram here for quick reference.]
+See [`architecture.md`](architecture.md) for the full Mermaid diagram.
 
 ```
-[User] → [Frontend: React] → [API: FastAPI] → [watsonx.ai] → [Dashboard]
-                                    ↓
-                             [PostgreSQL DB]
+[Operator]  →  cli.py  →  scorer.py  →  allocator.py  →  console table
+[HTTP Client] → app.py → scorer.py  →  allocator.py  →  JSON response
+                              ↑
+                          zones.py (data)
 ```
 
 ## Key Design Decisions
 
 | Decision | Rationale |
 |---|---|
-| [e.g., Used watsonx.ai for anomaly detection] | [e.g., Pre-trained models reduced time-to-value vs. building from scratch] |
-| [Decision 2] | [Rationale 2] |
-| [Decision 3] | [Rationale 3] |
+| Pure-function scorer and allocator | Makes each layer independently unit-testable; no side effects |
+| Floor allocation with remainder top-up | Guarantees total allocated always equals total available — no rounding shortfall |
+| Road inaccessibility reduces score (not increases) | Reflects actionable priority — hard-to-reach zones get fewer units until access is restored |
+| No database | Simplifies the prototype; zone data source is a single swap-out point for production |
+| Flask over FastAPI | Minimal dependency footprint; sufficient for a hackathon REST surface |
 
 ## IBM Technologies Used
 
-[Explain specifically HOW you used each IBM technology — not just that you used it.]
-
-- **[IBM Tech 1, e.g., watsonx.ai]:** [How it was used — e.g., "Used the `ibm/granite-13b-instruct-v2` model via the Python SDK to classify anomaly types from log text."]
-- **[IBM Tech 2]:** [How it was used]
+- **IBM Bob:** Used as the AI planning and code-generation tool to design the architecture, write and validate all source files, and produce documentation for this submission.

@@ -1,6 +1,4 @@
-# 🚀 [Your Project Title Here]
-
-> ⚠️ **Replace everything in `[ ]` brackets with your actual content before submission.**
+# 🚀 D3 Autonomous Disaster Response Planner
 
 ---
 
@@ -8,8 +6,8 @@
 
 | Field | Value |
 |---|---|
-| **Team Name** | [Your Team Name] |
-| **Track** | [AI / DevOps / Sustainability / Open] |
+| **Team Name** | Apex Squad |
+| **Track** | AI |
 | **Team Lead** | [Name] — [email@ibm.com] |
 | **Members** | [Name 1], [Name 2], [Name 3] |
 
@@ -17,27 +15,23 @@
 
 ## 🎯 Problem Statement
 
-> In 2–3 sentences: What problem does your project solve? Who experiences this problem?
-
-[Describe the real-world problem your project addresses. Be specific about who the user is and what pain point they face.]
+During large-scale disasters, emergency coordinators must rapidly decide which zones need medical teams and rescue units first — with incomplete information and limited time. Poor allocation decisions cost lives. There is no lightweight, automated tool that scores zones by urgency and distributes limited resources proportionally.
 
 ---
 
 ## 💡 Solution
 
-> In 2–3 sentences: What did you build? How does it solve the problem above?
-
-[Describe your solution clearly. Explain the core mechanism — what makes it work.]
+The **D3 Autonomous Disaster Response Planner** is a Python backend that ingests disaster zone data (severity, population, zone type, road accessibility), computes a priority score for each zone, and allocates a fixed pool of medical teams and rescue units proportionally across zones. It is exposed as both a REST API (Flask) and a CLI tool for instant use.
 
 ---
 
 ## ✨ Key Features
 
-- **Feature 1:** [Brief description — e.g., "Real-time anomaly detection using watsonx.ai"]
-- **Feature 2:** [Brief description]
-- **Feature 3:** [Brief description]
-- **Feature 4:** [Optional]
-- **Feature 5:** [Optional]
+- **Priority Scoring Engine:** Calculates per-zone scores using severity × population × disaster-type multiplier × accessibility factor.
+- **Proportional Allocation:** Distributes medical teams and rescue units across zones using floor-division with remainder top-up — no zone left with under-allocated rounding errors.
+- **Flask REST API:** `GET /api/allocate` returns a fully scored and allocated JSON response for integration with any frontend or dashboard.
+- **CLI Entry Point:** `python cli.py` prints a formatted allocation table to the console — no server needed for quick testing.
+- **Environment-driven Configuration:** Total resource pools (`TOTAL_MEDICAL_TEAMS`, `TOTAL_RESCUE_UNITS`) are overridable via environment variables without code changes.
 
 ---
 
@@ -45,50 +39,58 @@
 
 | Category | Technologies |
 |---|---|
-| **Languages** | [e.g., Python, TypeScript] |
-| **Frameworks** | [e.g., FastAPI, React] |
-| **IBM Technologies** | [e.g., watsonx.ai, IBM Bob, IBM Cloud] |
-| **Databases** | [e.g., PostgreSQL, Redis] |
-| **Other** | [e.g., Docker, GitHub Actions] |
+| **Languages** | Python 3.11+ |
+| **Frameworks** | Flask |
+| **IBM Technologies** | IBM Bob (used for planning and code generation) |
+| **Databases** | None (hardcoded sample data — no DB dependency) |
+| **Other** | GitHub Actions (CI validation) |
 
 ---
 
 ## 📁 Repository Structure
 
 ```
-├── src/                  # All source code
-├── docs/                 # Written documentation
+├── src/
+│   └── backend/
+│       ├── zones.py          # Sample disaster zone data
+│       ├── scorer.py         # Priority score formula
+│       ├── allocator.py      # Resource allocation logic
+│       ├── app.py            # Flask API (GET /api/allocate, GET /health)
+│       ├── cli.py            # CLI entry point
+│       └── requirements.txt  # Python dependencies
+├── docs/
 │   ├── problem-statement.md
 │   ├── solution-overview.md
 │   ├── architecture.md
 │   └── setup-guide.md
-├── demo/                 # Demo artifacts
-│   ├── screenshots/      # App screenshots
-│   └── demo-video-link.txt  # Link to demo video
-├── presentation/         # Slide deck
-└── submission.yaml       # Structured submission metadata
+├── demo/
+│   ├── screenshots/
+│   └── demo-video-link.txt
+├── presentation/
+└── submission.yaml
 ```
 
 ---
 
 ## ⚡ How to Run
 
-> **Copy these exact steps from your [`docs/setup-guide.md`](docs/setup-guide.md)**
-
 ```bash
 # 1. Clone the repo
-git clone https://github.com/[your-repo].git
-cd [your-repo]
+git clone https://github.com/[your-org]/bob-ai-hackathon-Apex-squad.git
+cd bob-ai-hackathon-Apex-squad/src/backend
 
 # 2. Install dependencies
-[your install command here]
+pip install -r requirements.txt
 
-# 3. Configure environment
+# 3. Configure environment (optional — defaults work out of the box)
 cp .env.example .env
-# Edit .env with your values
 
-# 4. Run the project
-[your run command here]
+# 4a. Run via CLI
+python cli.py
+
+# 4b. Run the Flask API server
+python app.py
+# Then visit: http://127.0.0.1:5000/api/allocate
 ```
 
 ---
@@ -100,22 +102,18 @@ cp .env.example .env
 | 📹 Demo Video | [See demo/demo-video-link.txt](demo/demo-video-link.txt) |
 | 🌐 Live Demo | [See demo/live-demo-url.txt](demo/live-demo-url.txt) |
 | 🖼️ Screenshots | [See demo/screenshots/](demo/screenshots/) |
-| 📊 Presentation | [See presentation/slides.pdf](presentation/) |
+| 📊 Presentation | [See presentation/](presentation/) |
 
 ---
 
 ## ⚠️ Known Limitations
 
-> Be honest — judges appreciate transparency over overclaiming.
-
-- [Limitation 1: e.g., "Authentication is mocked — not production-ready"]
-- [Limitation 2: e.g., "Only tested on Chrome"]
-- [Limitation 3: e.g., "Feature X is scaffolded but not fully implemented"]
+- Zone data is hardcoded — no database or live data feed integration.
+- The scoring formula uses fixed multipliers; weights are not yet tunable via config.
+- Authentication is not implemented on the Flask routes (not production-ready).
 
 ---
 
 ## 🏅 What We're Most Proud Of
 
-[Tell the judges what part of your submission is strongest and worth paying close attention to.]
-
----
+The allocation algorithm guarantees that the sum of allocated units always exactly equals the available pool (using proportional floor allocation with remainder top-up), and the clean separation between `scorer.py`, `allocator.py`, and `app.py` makes each layer independently testable and replaceable.
